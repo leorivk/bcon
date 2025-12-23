@@ -4,6 +4,7 @@
 
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { healthCheckTool } from './health-check.js';
+import { listContainersTool } from './list-containers.js';
 import { logger } from '../utils/logger.js';
 
 export function registerTools(server: Server): void {
@@ -13,6 +14,7 @@ export function registerTools(server: Server): void {
   server.setRequestHandler('tools/list', async () => ({
     tools: [
       healthCheckTool.definition,
+      listContainersTool.definition,
       // 추후 다른 tool들이 여기에 추가됩니다
     ],
   }));
@@ -25,6 +27,9 @@ export function registerTools(server: Server): void {
     switch (name) {
       case 'health_check':
         return healthCheckTool.handler(args);
+
+      case 'list_containers':
+        return listContainersTool.handler(args);
 
       default:
         throw new Error(`알 수 없는 tool: ${name}`);
