@@ -21,7 +21,7 @@ class I18n {
 
   private loadMessages() {
     try {
-      const localesPath = path.join(__dirname, '../locales', `${this.locale}.json`);
+      const localesPath = path.join(__dirname, 'locales', `${this.locale}.json`);
       const data = fs.readFileSync(localesPath, 'utf-8');
       this.messages = JSON.parse(data);
     } catch (error) {
