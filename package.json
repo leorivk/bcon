@@ -5,7 +5,7 @@
   "type": "module",
   "main": "./dist/index.js",
   "bin": {
-    "bcon": "./dist/index.js"
+    "bcon": "dist/index.js"
   },
   "files": [
     "dist",
@@ -14,7 +14,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/leorivk/bcon.git"
+    "url": "git+https://github.com/leorivk/bcon.git"
   },
   "bugs": {
     "url": "https://github.com/leorivk/bcon/issues"
