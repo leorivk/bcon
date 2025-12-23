@@ -7,18 +7,20 @@ import { healthCheckTool } from './health-check.js';
 import { listContainersTool } from './list-containers.js';
 import { getContainerLogsTool } from './get-container-logs.js';
 import { getContainerStatsTool } from './get-container-stats.js';
+import { diagnoseContainerTool } from './diagnose-container.js';
 import { logger } from '../utils/logger.js';
 
 export function registerTools(server: Server): void {
   logger.info('Tool 등록 중...');
 
-  // Phase 1: 기본 Tool 등록
+  // Phase 1 + 2: Tool 등록
   server.setRequestHandler('tools/list', async () => ({
     tools: [
       healthCheckTool.definition,
       listContainersTool.definition,
       getContainerLogsTool.definition,
       getContainerStatsTool.definition,
+      diagnoseContainerTool.definition,
       // 추후 다른 tool들이 여기에 추가됩니다
     ],
   }));
@@ -40,6 +42,9 @@ export function registerTools(server: Server): void {
 
       case 'get_container_stats':
         return getContainerStatsTool.handler(args);
+
+      case 'diagnose_container':
+        return diagnoseContainerTool.handler(args);
 
       default:
         throw new Error(`알 수 없는 tool: ${name}`);
