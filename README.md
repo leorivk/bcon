@@ -28,16 +28,34 @@ npx bcon
 
 ### Claude Code에서 사용
 
-`~/.config/claude-code/mcp-servers.json`에 다음 설정 추가:
+#### 방법 1: CLI 명령어로 설치 (추천)
+
+터미널에서 다음 명령어를 실행하세요:
+
+```bash
+claude mcp add --transport stdio bcon -- npx bcon
+```
+
+설치 후 Claude Code를 재시작하면 bcon MCP 서버를 사용할 수 있습니다.
+
+#### 방법 2: 수동으로 설정
+
+`~/.claude.json` 파일에 다음 설정을 추가:
 
 ```json
 {
-  "bcon": {
-    "command": "npx",
-    "args": ["bcon"]
+  "mcpServers": {
+    "bcon": {
+      "command": "npx",
+      "args": ["bcon"]
+    }
   }
 }
 ```
+
+**주의**: 이미 `~/.claude.json` 파일이 있다면, 기존 내용에 `mcpServers` 필드만 추가하세요.
+
+설정 후 Claude Code를 재시작하면 bcon MCP 서버를 사용할 수 있습니다.
 
 ### 사용 가능한 Tools
 
@@ -123,16 +141,26 @@ Docker Compose 파일과 실제 Docker 상태를 비교합니다.
 
 ## 개발
 
+### 로컬에서 개발하기
+
 ```bash
+# 저장소 클론
+git clone https://github.com/leorivk/bcon.git
+cd bcon
+
 # 의존성 설치
 npm install
 
-# 개발 모드
-npm run dev
-
-# 빌드
+# 빌드 (필수!)
 npm run build
 
+# 개발 모드 (파일 변경 시 자동 재빌드)
+npm run dev
+```
+
+### 기타 명령어
+
+```bash
 # 타입 체크
 npm run typecheck
 
@@ -142,6 +170,8 @@ npm run lint
 # 포맷
 npm run format
 ```
+
+**주의**: 로컬에서 개발할 때는 반드시 `npm run build`를 먼저 실행해야 합니다. `dist/` 폴더가 생성되어야 MCP 서버가 정상 작동합니다.
 
 ## 아키텍처
 

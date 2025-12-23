@@ -1,8 +1,10 @@
 # Development files
 src/
 tests/
-docs/
 specs/
+
+# Keep docs for users
+# docs/
 
 # Config files
 tsconfig.json
@@ -26,3 +28,9 @@ npm-debug.log*
 
 # OS
 .DS_Store
+
+# Docker
+docker-compose.yml
+
+# Claude
+.claude/
