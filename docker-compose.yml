@@ -1,0 +1,18 @@
+services:
+  nginx:
+    image: nginx:alpine
+    container_name: test-nginx
+    ports:
+      - "8080:80"
+    deploy:
+      replicas: 1
+    restart: unless-stopped
+
+  redis:
+    image: redis:alpine
+    container_name: test-redis
+    ports:
+      - "6379:6379"
+    deploy:
+      replicas: 1
+    restart: unless-stopped
