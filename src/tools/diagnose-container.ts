@@ -72,45 +72,36 @@ export const diagnoseContainerTool = {
       try {
         if (containerInfo.state === ContainerState.RUNNING) {
           const statsResult = await dockerService.getContainerStats(containerId);
-          // stats를 우리 타입으로 변환하기 위해 get-container-stats의 mapStats 로직 재사용
-          const { default: getContainerStatsTool } = await import('./get-container-stats.js');
-          const rawStats = statsResult.stats;
+          const rawStats = statsResult.stats as any;
 
-          // 임시로 간단하게 처리 (나중에 리팩토링 가능)
+          // Stats 계산
+          const cpuDelta =
+            (rawStats.cpu_stats?.cpu_usage?.total_usage || 0) -
+            (rawStats.precpu_stats?.cpu_usage?.total_usage || 0);
+          const systemDelta =
+            (rawStats.cpu_stats?.system_cpu_usage || 0) -
+            (rawStats.precpu_stats?.system_cpu_usage || 0);
+          const cpuCount = rawStats.cpu_stats?.online_cpus || 1;
+          const cpuPercent = systemDelta > 0 ? (cpuDelta / systemDelta) * cpuCount * 100 : 0;
+
+          const memoryUsage = rawStats.memory_stats?.usage || 0;
+          const memoryLimit = rawStats.memory_stats?.limit || 0;
+          const memoryPercent = memoryLimit > 0 ? (memoryUsage / memoryLimit) * 100 : 0;
+
           stats = {
             containerId: statsResult.containerId,
             containerName: statsResult.containerName,
             timestamp: new Date().toISOString(),
-            cpuPercent: 0,
-            cpuCount: 1,
-            memoryUsageBytes: 0,
-            memoryLimitBytes: 0,
-            memoryPercent: 0,
+            cpuPercent: Math.round(cpuPercent * 100) / 100,
+            cpuCount,
+            memoryUsageBytes: memoryUsage,
+            memoryLimitBytes: memoryLimit,
+            memoryPercent: Math.round(memoryPercent * 100) / 100,
             networkRxBytes: 0,
             networkTxBytes: 0,
             blockReadBytes: 0,
             blockWriteBytes: 0,
           };
-
-          // 실제 값 추출
-          const cpuDelta =
-            ((rawStats as any).cpu_stats?.cpu_usage?.total_usage || 0) -
-            ((rawStats as any).precpu_stats?.cpu_usage?.total_usage || 0);
-          const systemDelta =
-            ((rawStats as any).cpu_stats?.system_cpu_usage || 0) -
-            ((rawStats as any).precpu_stats?.system_cpu_usage || 0);
-          const cpuCount = (rawStats as any).cpu_stats?.online_cpus || 1;
-          const cpuPercent = systemDelta > 0 ? (cpuDelta / systemDelta) * cpuCount * 100 : 0;
-
-          const memoryUsage = (rawStats as any).memory_stats?.usage || 0;
-          const memoryLimit = (rawStats as any).memory_stats?.limit || 0;
-          const memoryPercent = memoryLimit > 0 ? (memoryUsage / memoryLimit) * 100 : 0;
-
-          stats.cpuPercent = Math.round(cpuPercent * 100) / 100;
-          stats.cpuCount = cpuCount;
-          stats.memoryUsageBytes = memoryUsage;
-          stats.memoryLimitBytes = memoryLimit;
-          stats.memoryPercent = Math.round(memoryPercent * 100) / 100;
         }
       } catch (error) {
         logger.warn('Stats 조회 실패 (중지된 컨테이너일 수 있음):', error);
@@ -146,8 +137,8 @@ export const diagnoseContainerTool = {
       });
 
       // 7. 요약 생성
-      const summary = this.generateSummary(diagnosis);
-      const detailedExplanation = this.generateDetailedExplanation(diagnosis);
+      const summary = diagnoseContainerTool.generateSummary(diagnosis);
+      const detailedExplanation = diagnoseContainerTool.generateDetailedExplanation(diagnosis);
 
       // 8. 결과 조합
       const report: DiagnosisReport = {
@@ -159,8 +150,8 @@ export const diagnoseContainerTool = {
         symptoms: diagnosis.symptoms,
         likelyCauses: diagnosis.likelyCauses,
         suggestions: diagnosis.suggestions,
-        summary,
-        detailedExplanation,
+        summary: summary || '분석 완료',
+        detailedExplanation: detailedExplanation || '상세 정보 없음',
       };
 
       logger.info(`컨테이너 ${containerInfo.name} 진단 완료`);
@@ -194,7 +185,7 @@ export const diagnoseContainerTool = {
     }
 
     const topSymptom = diagnosis.symptoms[0];
-    const topCause = diagnosis.likelyCauses[0];
+    const topCause = diagnosis.likelyCauses.length > 0 ? diagnosis.likelyCauses[0] : null;
 
     if (topCause) {
       return `${topSymptom.description}. ${topCause.description}`;

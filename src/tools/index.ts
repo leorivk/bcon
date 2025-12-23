@@ -3,6 +3,10 @@
  */
 
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
+import {
+  ListToolsRequestSchema,
+  CallToolRequestSchema,
+} from '@modelcontextprotocol/sdk/types.js';
 import { healthCheckTool } from './health-check.js';
 import { listContainersTool } from './list-containers.js';
 import { getContainerLogsTool } from './get-container-logs.js';
@@ -15,7 +19,7 @@ export function registerTools(server: Server): void {
   logger.info('Tool 등록 중...');
 
   // Phase 1 + 2: 모든 Tool 등록
-  server.setRequestHandler('tools/list', async () => ({
+  server.setRequestHandler(ListToolsRequestSchema, async () => ({
     tools: [
       healthCheckTool.definition,
       listContainersTool.definition,
@@ -26,7 +30,7 @@ export function registerTools(server: Server): void {
     ],
   }));
 
-  server.setRequestHandler('tools/call', async (request) => {
+  server.setRequestHandler(CallToolRequestSchema, async (request) => {
     const { name, arguments: args } = request.params;
 
     logger.debug(`Tool 호출: ${name}`, args);

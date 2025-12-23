@@ -50,7 +50,7 @@ export class DriftDetector {
     const actual = await this.dockerService.listContainers({ all: true });
 
     // 3. 매칭 및 Drift 탐지
-    const { differences, untracked } = this.compareSt ates(
+    const { differences, untracked } = this.compareStates(
       desired.services,
       actual,
       effectiveProjectName
