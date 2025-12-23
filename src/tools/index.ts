@@ -6,6 +6,7 @@ import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { healthCheckTool } from './health-check.js';
 import { listContainersTool } from './list-containers.js';
 import { getContainerLogsTool } from './get-container-logs.js';
+import { getContainerStatsTool } from './get-container-stats.js';
 import { logger } from '../utils/logger.js';
 
 export function registerTools(server: Server): void {
@@ -17,6 +18,7 @@ export function registerTools(server: Server): void {
       healthCheckTool.definition,
       listContainersTool.definition,
       getContainerLogsTool.definition,
+      getContainerStatsTool.definition,
       // 추후 다른 tool들이 여기에 추가됩니다
     ],
   }));
@@ -35,6 +37,9 @@ export function registerTools(server: Server): void {
 
       case 'get_container_logs':
         return getContainerLogsTool.handler(args);
+
+      case 'get_container_stats':
+        return getContainerStatsTool.handler(args);
 
       default:
         throw new Error(`알 수 없는 tool: ${name}`);

@@ -196,6 +196,45 @@ export class DockerService {
   }
 
   /**
+   * 컨테이너 리소스 사용량 조회
+   */
+  async getContainerStats(containerId: string): Promise<{
+    containerId: string;
+    containerName: string;
+    stats: unknown;
+  }> {
+    try {
+      const container = this.docker.getContainer(containerId);
+      const info = await container.inspect();
+
+      // 실행 중인지 확인
+      if (info.State.Status !== 'running') {
+        throw this.createError(ErrorCode.CONTAINER_NOT_RUNNING, null, { containerId });
+      }
+
+      // stats 조회 (stream=false로 1회만 조회)
+      const stats = await container.stats({ stream: false });
+
+      return {
+        containerId: info.Id.substring(0, 12),
+        containerName: info.Name.replace(/^\//, ''),
+        stats,
+      };
+    } catch (error: unknown) {
+      if (error && typeof error === 'object') {
+        if ('statusCode' in error && error.statusCode === 404) {
+          throw this.createError(ErrorCode.CONTAINER_NOT_FOUND, error, { containerId });
+        }
+        if ('code' in error && (error as BconError).code === ErrorCode.CONTAINER_NOT_RUNNING) {
+          throw error;
+        }
+      }
+      logger.error('컨테이너 stats 조회 실패:', error);
+      throw this.createError(ErrorCode.DOCKER_CONNECTION_FAILED, error);
+    }
+  }
+
+  /**
    * BconError 생성
    */
   private createError(
