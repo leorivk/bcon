@@ -14,12 +14,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/bcon.git"
+    "url": "https://github.com/leorivk/bcon.git"
   },
   "bugs": {
-    "url": "https://github.com/yourusername/bcon/issues"
+    "url": "https://github.com/leorivk/bcon/issues"
   },
-  "homepage": "https://github.com/yourusername/bcon#readme",
+  "homepage": "https://github.com/leorivk/bcon#readme",
   "scripts": {
     "dev": "tsup --watch",
     "build": "tsup && cp -r src/locales dist/",
