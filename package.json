@@ -1,0 +1,48 @@
+{
+  "name": "bcon",
+  "version": "0.1.0",
+  "description": "AI-mediated Container Operations MCP Server",
+  "type": "module",
+  "bin": {
+    "bcon": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "src/locales"
+  ],
+  "scripts": {
+    "dev": "tsup --watch",
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src/",
+    "format": "prettier --write src/"
+  },
+  "keywords": [
+    "docker",
+    "mcp",
+    "container",
+    "ai",
+    "devops"
+  ],
+  "author": "Pablo",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "dockerode": "^4.0.2",
+    "js-yaml": "^4.1.0"
+  },
+  "devDependencies": {
+    "@types/dockerode": "^3.3.31",
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^20.11.5",
+    "@typescript-eslint/eslint-plugin": "^6.19.0",
+    "@typescript-eslint/parser": "^6.19.0",
+    "eslint": "^8.56.0",
+    "prettier": "^3.2.4",
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.3"
+  }
+}
