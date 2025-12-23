@@ -1,0 +1,28 @@
+# Development files
+src/
+tests/
+docs/
+specs/
+
+# Config files
+tsconfig.json
+tsup.config.ts
+.eslintrc.json
+.prettierrc.json
+
+# Git
+.git
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store

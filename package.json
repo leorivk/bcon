@@ -1,15 +1,25 @@
 {
   "name": "bcon",
   "version": "0.1.0",
-  "description": "AI-mediated Container Operations MCP Server",
+  "description": "AI-mediated Container Operations MCP Server - Read-only Docker container observation and diagnosis tool",
   "type": "module",
+  "main": "./dist/index.js",
   "bin": {
     "bcon": "./dist/index.js"
   },
   "files": [
     "dist",
-    "src/locales"
+    "README.md",
+    "LICENSE"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/bcon.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/bcon/issues"
+  },
+  "homepage": "https://github.com/yourusername/bcon#readme",
   "scripts": {
     "dev": "tsup --watch",
     "build": "tsup && cp -r src/locales dist/",
