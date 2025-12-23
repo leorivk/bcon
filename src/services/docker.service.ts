@@ -156,6 +156,46 @@ export class DockerService {
   }
 
   /**
+   * 컨테이너 로그 조회
+   */
+  async getContainerLogs(options: {
+    containerId: string;
+    tail?: number;
+    since?: string;
+    until?: string;
+    timestamps?: boolean;
+  }): Promise<{ containerId: string; containerName: string; logs: Buffer }> {
+    const { containerId, tail = 100, since, until, timestamps = true } = options;
+
+    try {
+      const container = this.docker.getContainer(containerId);
+      const info = await container.inspect();
+
+      // 로그 조회
+      const logsStream = (await container.logs({
+        stdout: true,
+        stderr: true,
+        tail,
+        since,
+        until,
+        timestamps,
+      })) as Buffer;
+
+      return {
+        containerId: info.Id.substring(0, 12),
+        containerName: info.Name.replace(/^\//, ''),
+        logs: logsStream,
+      };
+    } catch (error: unknown) {
+      if (error && typeof error === 'object' && 'statusCode' in error && error.statusCode === 404) {
+        throw this.createError(ErrorCode.CONTAINER_NOT_FOUND, error, { containerId });
+      }
+      logger.error('컨테이너 로그 조회 실패:', error);
+      throw this.createError(ErrorCode.DOCKER_CONNECTION_FAILED, error);
+    }
+  }
+
+  /**
    * BconError 생성
    */
   private createError(
