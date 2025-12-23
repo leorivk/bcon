@@ -537,25 +537,13 @@ DriftReport // specs/types.md 기반
 
 | 언어 | 로케일 | 우선순위 |
 |-----|--------|---------|
-| 영어 | `en` | 기본 (Default) |
-| 한국어 | `ko` | 옵션 |
+| 한국어 | `ko` | 기본 (Default) - MVP 초기 구현 |
+| 영어 | `en` | 추후 추가 |
 
 ### 5.2 메시지 구조
 
 ```typescript
-// src/locales/en.json
-{
-  "errors": {
-    "docker_connection_failed": "Failed to connect to Docker daemon. Is Docker running?",
-    "container_not_found": "Container '{{containerId}}' not found"
-  },
-  "diagnosis": {
-    "high_cpu": "CPU usage is high ({{percent}}%)",
-    "high_memory": "Memory usage is high ({{percent}}%)"
-  }
-}
-
-// src/locales/ko.json
+// src/locales/ko.json (MVP 기본)
 {
   "errors": {
     "docker_connection_failed": "Docker 데몬에 연결할 수 없습니다. Docker가 실행 중인가요?",
@@ -566,19 +554,30 @@ DriftReport // specs/types.md 기반
     "high_memory": "메모리 사용률이 높습니다 ({{percent}}%)"
   }
 }
+
+// src/locales/en.json (추후 추가)
+{
+  "errors": {
+    "docker_connection_failed": "Failed to connect to Docker daemon. Is Docker running?",
+    "container_not_found": "Container '{{containerId}}' not found"
+  },
+  "diagnosis": {
+    "high_cpu": "CPU usage is high ({{percent}}%)",
+    "high_memory": "Memory usage is high ({{percent}}%)"
+  }
+}
 ```
 
 ### 5.3 로케일 선택
 
 ```typescript
-// 우선순위:
+// MVP: 한국어 고정
+const locale = 'ko';
+
+// 추후 확장 시:
 // 1. 환경변수 BCON_LANG
 // 2. 시스템 로케일 (process.env.LANG)
-// 3. 기본값: en
-
-const locale = process.env.BCON_LANG
-  || process.env.LANG?.split('.')[0]
-  || 'en';
+// 3. 기본값: ko
 ```
 
 ---
@@ -940,38 +939,37 @@ bcon
 
 ---
 
-## 13. 마일스톤
+## 13. 마일스톤 (MVP 초기 구현)
 
-### Phase 0: 프로젝트 초기화 (1일)
+> **주의**: MVP 초기 구현은 **동작하는 기능 구현에 집중**하며, 테스트 코드는 추후 별도로 추가합니다.
+
+### Phase 0: 프로젝트 초기화
 - ✅ TRD 작성
 - 프로젝트 구조 생성
 - package.json, tsconfig.json, tsup.config.ts 설정
 - MCP Server 기본 골격
-- i18n 구조 (en.json, ko.json)
+- i18n 구조 (ko.json만 - 한국어 기본)
 
-### Phase 1: 기본 Tool 구현 (2-3일)
+### Phase 1: 기본 Tool 구현
 - health_check
 - list_containers
-- get_container_logs (**로그 파싱 +0.5일**)
+- get_container_logs (로그 파싱 포함)
 - get_container_stats
 
-### Phase 2: 고급 Tool 구현 (3-4일)
+### Phase 2: 고급 Tool 구현
 - diagnose_container (룰 기반 엔진)
 - detect_drift (Compose 파싱 + 매칭)
-  - MVP 지원 범위 제한 (build/profiles/extends 제외)
+  - MVP 지원 범위 제한 (build/profiles/extends 제excluded)
 
-### Phase 3: 테스트 & 문서화 (2-3일)
+### Phase 3: 문서화 & 배포 준비
+- README.md, 사용 예시 작성
+- npm 퍼블리싱 준비
+- Claude Code 설정 예시
+
+### Phase 4: 테스트 추가 (추후)
 - Unit 테스트 (커버리지 70%+)
 - Integration 테스트 (docker-compose.test.yml)
-- README.md, 사용 예시
-- i18n 테스트 (en, ko)
-
-### Phase 4: 배포 준비 (1일)
-- npm 퍼블리싱
-- Claude Code 설정 예시
-- 초기 사용자 피드백 수집
-
-**전체 예상 기간**: 8-11일 (로그 파싱 + 테스트 컨테이너 관리 추가 시간 반영)
+- 테스트 자동화 (CI/CD)
 
 ---
 
